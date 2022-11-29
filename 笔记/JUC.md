@@ -130,7 +130,7 @@ java图形化查看命令jconsole
 
 
 
-## 1.4* 原理之线程运行
+## 1.3* 原理之线程运行
 
 ### 栈与栈帧
 
@@ -160,3 +160,9 @@ jvm中由堆、栈、方法区所组成，其中栈内存是分给线程用的�
 - Context Switch频繁发生会影响性能
 
 ![上下文切换](/Users/jamison/Library/Application Support/typora-user-images/image-20221128210511752.png)
+
+## 1.4 常见方法
+
+![常见方法](/Users/jamison/Library/Application Support/typora-user-images/image-20221129193631674.png)
+
+![常用方法](/Users/jamison/Library/Application Support/typora-user-images/image-20221129194248890.png)
