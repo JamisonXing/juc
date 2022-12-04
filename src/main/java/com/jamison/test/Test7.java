@@ -16,7 +16,7 @@ public class Test7 {
             public void run() {
                 log.debug("enter sleep");
                 try {
-                    TimeUnit.SECONDS.sleep();
+                    TimeUnit.SECONDS.sleep(2);
                 } catch (InterruptedException e) {
                     log.debug("wake up");
                     throw new RuntimeException(e);

@@ -166,3 +166,100 @@ jvm中由堆、栈、方法区所组成，其中栈内存是分给线程用的�
 ![常见方法](/Users/jamison/Library/Application Support/typora-user-images/image-20221129193631674.png)
 
 ![常用方法](/Users/jamison/Library/Application Support/typora-user-images/image-20221129194248890.png)
+
+
+
+# 应用篇
+
+## 效率
+
+<center>案例-防止cpu占用到100%</center>
+
+### sleep实现
+
+在没有利用CPU来计算时，不要让while(true)空转浪费cpu，这时可以使用yield或sleep来让出cpu的使用权。
+
+```java
+public class Demo1 {
+    public static void main(String[] args) {
+        new Thread(() -> {
+            while(true) {
+                try {
+                    Thread.sleep(5);
+                } catch(Exception e) {}
+            }
+        });
+    }
+}
+```
+
+
+
+- 可以用wait或者条件变量达到类似的效果
+- 不同的是，后两种都需要加速，并且需要相应的唤醒操作，一般使用于要进行同步的场景。
+- sleep适用于无序锁的场景。
+
+
+
+
+
+
+
+# 并发编程设计模式
+
+## 两阶段终止模式
+
+在T1线程中如何优雅地终止T2？这里的优雅指的是给T2一个料理后事的机会。
+
+### 1. 错误思路
+
+![错误思路](/Users/jamison/Library/Application Support/typora-user-images/image-20221204180816022.png)
+
+### 2. 两阶段终止模式
+
+一个监控案例
+
+![监控案例](/Users/jamison/Library/Application Support/typora-user-images/image-20221204180915338.png)
+
+```java
+@Slf4j(topic = "c.Demo2")
+public class Demo2 {
+    public static void main(String[] args) throws InterruptedException{
+        TwoPhaseTermination t = new TwoPhaseTermination();
+        t.start();
+        Thread.sleep(4000);
+        t.stop();
+    }
+}
+
+@Slf4j(topic = "c.TwoPhaseTermination")
+class TwoPhaseTermination {
+    private Thread moniter;
+    void start() {
+        moniter = new Thread(() -> {
+            Thread t1 = Thread.currentThread();
+            while(true) {
+                if(t1.isInterrupted()) {
+                    log.debug("料理后事");
+                    break;
+                }
+                try {
+                    Thread.sleep(1000);
+                    log.debug("执行监控程序");
+                }catch (InterruptedException e) {
+                    log.debug("重置标记");
+                    //重置标记，因为sleep过程中被打断，标记为false,不重置的话，下一次循环不会退出。
+                    t1.interrupt();
+                    e.printStackTrace();
+                }
+            }
+        });
+        moniter.start();
+    }
+
+    void stop() {
+        moniter.interrupt();
+    }
+}
+```
+
