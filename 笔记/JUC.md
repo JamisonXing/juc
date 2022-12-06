@@ -181,7 +181,103 @@ thread.setDaemon(true);
 
 
 
+## 1.6 线程状态
 
+### 五种状态
+
+这是从**操作系统**的层面来描述的：
+
+![五种状态](/Users/jamison/Library/Application Support/typora-user-images/image-20221206115421313.png)
+
+### 六种状态
+
+这是从**Java API**层面来描述的：
+
+根据Thread.State枚举，分为六种状态
+
+![6种状态](/Users/jamison/Library/Application Support/typora-user-images/image-20221206115731395.png)
+
+使线程出现六种状态，实例如下：
+
+```java
+@Slf4j(topic = "c.TestState")
+public class TestState {
+    public static void main(String[] args) throws InterruptedException {
+        //new
+        Thread t1 = new Thread(() -> {
+
+        });
+
+        //runnable
+        Thread t2 = new Thread(() -> {
+            while(true) {
+
+            }
+        });
+        t2.start();
+
+        //terminated
+        Thread t3 = new Thread(() -> {
+            log.debug("what");
+        });
+        t3.start();
+
+        //timed_waiting
+        Thread t4 = new Thread(() -> {
+            synchronized(TestState.class) {
+                try {
+                    TimeUnit.SECONDS.sleep(10);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        t4.start();
+
+        //waiting
+        Thread t5 = new Thread(() -> {
+            try {
+                t2.join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        t5.start();
+
+        //block
+        Thread t6 = new Thread(() -> {
+           synchronized (TestState.class) {
+               try {
+                   TimeUnit.SECONDS.sleep(1);
+               } catch (InterruptedException e) {
+                   throw new RuntimeException(e);
+               }
+           }
+        });
+        t6.start();
+
+
+        TimeUnit.SECONDS.sleep(1);
+        log.debug("t1 state {}", t1.getState());
+        log.debug("t2 state {}", t2.getState());
+        log.debug("t3 state {}", t3.getState());
+        log.debug("t4 state {}", t4.getState());
+        log.debug("t5 state {}", t5.getState());
+        log.debug("t6 state {}", t6.getState());
+    }
+}
+
+/**
+result:
+11:51:35:0322 [Thread-2] c.TestState - what
+11:51:36:0326 [main] c.TestState - t1 state NEW
+11:51:36:0327 [main] c.TestState - t2 state RUNNABLE
+11:51:36:0327 [main] c.TestState - t3 state TERMINATED
+11:51:36:0327 [main] c.TestState - t4 state TIMED_WAITING
+11:51:36:0327 [main] c.TestState - t5 state WAITING
+11:51:36:0327 [main] c.TestState - t6 state BLOCKED
+*/
+```
 
 
 
