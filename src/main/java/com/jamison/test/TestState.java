@@ -4,6 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author jamison
+ */
 @Slf4j(topic = "c.TestState")
 public class TestState {
     public static void main(String[] args) throws InterruptedException {
